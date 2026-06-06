@@ -11,6 +11,18 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSignalR();
 
+// Enable CORS for frontend UI connection
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .SetIsOriginAllowed(origin => true)
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddHttpClient<IAIService, GeminiService>();
 
 builder.Services.AddMediatR(cfg =>
@@ -32,6 +44,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseWebSockets();
 
 app.UseAuthorization();
 

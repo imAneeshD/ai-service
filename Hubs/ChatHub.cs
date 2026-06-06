@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ai_service.Hubs
@@ -14,9 +14,14 @@ namespace ai_service.Hubs
 
         public async Task SendMessage(string message)
         {
-            var response = await _mediator.Send(new Features.Chat.Commands.SendMessageCommand(message));
+            var stream = _mediator.CreateStream(new Features.Chat.Commands.SendMessageCommand(message));
 
-            await Clients.Caller.SendAsync("ReceiveMessage", response);
+            await foreach (var chunk in stream)
+            {
+                await Clients.Caller.SendAsync("ReceiveMessageChunk", chunk);
+            }
+
+            await Clients.Caller.SendAsync("ReceiveMessageEnd");
         }
     }
 }

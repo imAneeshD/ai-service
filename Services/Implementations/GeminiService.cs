@@ -34,7 +34,10 @@ namespace ai_service.Services.Implementations
 
             var json = JsonSerializer.Serialize(requestBody);
 
-            var response = _httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json")).Result;
+            var response = await _httpClient.PostAsync(
+                url,
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
             response.EnsureSuccessStatusCode();
 
             var responseJson = await response.Content.ReadAsStringAsync();

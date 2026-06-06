@@ -23,7 +23,15 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddHttpClient<IAIService, GeminiService>();
+var apiProvider = builder.Configuration["AIServiceProvider"] ?? "Gemini";
+if (apiProvider.Equals("Bedrock", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddSingleton<IAIService, BedrockAgentService>();
+}
+else
+{
+    builder.Services.AddHttpClient<IAIService, GeminiService>();
+}
 
 builder.Services.AddMediatR(cfg =>
 {
